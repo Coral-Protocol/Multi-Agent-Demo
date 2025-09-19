@@ -6,3 +6,6 @@ path = "agents/github"
 
 [[local-agent]]
 path = "agents/interface"
+
+[[local-agent]]
+path = "agents/pr-report"

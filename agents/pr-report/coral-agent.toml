@@ -1,0 +1,40 @@
+[agent]
+name = "pr-report"
+version = "0.0.1"
+
+[options.GOOGLE_API_KEY]
+type = "string"
+description = "Google API key for Gemini AI model"
+
+[options.GCP_BUCKET_NAME]
+type = "string"
+description = "GCP Cloud Storage bucket name for PDF uploads"
+default = "clippings-bucket"
+
+[options.MODEL_NAME]
+type = "string"
+description = "What model to use (e.g 'gemini-2.0-flash')"
+default = "gemini-2.0-flash"
+
+[options.MODEL_PROVIDER]
+type = "string"
+description = "What model provider to use (e.g 'google', etc)"
+default = "google_genai"
+
+[options.MODEL_MAX_TOKENS]
+type = "string"
+description = "Max tokens to use"
+default = "16000"
+
+[options.MODEL_TEMPERATURE]
+type = "string"
+description = "What model temperature to use"
+default = "0.3"
+
+[options.TIMEOUT_MS]
+type = "string"
+description = "Connection/tool timeouts in ms"
+default = "300"
+
+[runtimes.executable]
+command = ["bash", "-c", "./run_agent.sh main.py"]

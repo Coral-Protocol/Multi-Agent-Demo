@@ -1,4 +1,4 @@
-FROM gradle:8.14.2-jdk21-alpine AS build
+FROM gradle:8.14.2-jdk21-jammy AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 
@@ -10,14 +10,18 @@ RUN jlink \
 
 RUN gradle build --no-daemon -x test
 
-FROM alpine:3
+FROM ubuntu:jammy
 
-RUN apk add --no-cache ca-certificates
+# Install runtime dependencies following apt best practices: update, install with no recommends, and clean apt lists in one layer
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libudev1 ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV JAVA_HOME=/opt/minimal-java
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
-ENV CONFIG_PATH="/config"
+ENV REGISTRY_FILE_PATH="/config/registry.toml"
+ENV CONFIG_FILE_PATH="/config/config.toml"
 
 RUN mkdir /app
 # Copy the custom minimal JRE from the builder stage

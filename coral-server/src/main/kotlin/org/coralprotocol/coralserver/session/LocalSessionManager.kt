@@ -1,5 +1,6 @@
 package org.coralprotocol.coralserver.session
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -9,8 +10,10 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.coralprotocol.coralserver.agent.graph.AgentGraph
 import org.coralprotocol.coralserver.agent.graph.GraphAgentProvider
 import org.coralprotocol.coralserver.agent.graph.toRemote
+import org.coralprotocol.coralserver.agent.payment.AgentClaimAmount
 import org.coralprotocol.coralserver.agent.payment.PaidAgent
 import org.coralprotocol.coralserver.agent.payment.toMicroCoral
+import org.coralprotocol.coralserver.agent.payment.toUsd
 import org.coralprotocol.coralserver.agent.runtime.Orchestrator
 import org.coralprotocol.coralserver.config.CORAL_MAINNET_MINT
 import org.coralprotocol.coralserver.config.Config
@@ -20,6 +23,8 @@ import org.coralprotocol.payment.blockchain.BlockchainService
 import org.coralprotocol.payment.blockchain.models.SessionInfo
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+
+private val logger = KotlinLogging.logger {  }
 
 fun AgentGraph.adjacencyMap(): Map<String, Set<String>> {
     val map = mutableMapOf<String, MutableSet<String>>()
@@ -114,12 +119,14 @@ class LocalSessionManager(
             if (provider !is GraphAgentProvider.RemoteRequest)
                 throw IllegalArgumentException("createPaymentSession given non remote agent ${agent.name}")
 
-            fundAmount += provider.maxCost.toMicroCoral(jupiterService)
+            val maxCostMicro = provider.maxCost.toMicroCoral(jupiterService)
+            fundAmount += maxCostMicro
+
             val resolvedRemote = provider.toRemote(id, paymentSessionId, jupiterService)
 
             agents.add(PaidAgent(
                 id = agent.name,
-                cap = provider.maxCost.toMicroCoral(jupiterService),
+                cap = maxCostMicro,
                 developer = resolvedRemote.wallet
             ))
 
@@ -127,11 +134,14 @@ class LocalSessionManager(
             agent.provider = resolvedRemote
         }
 
-        // todo: add fundAmount when thing
-        return blockchainService.createEscrowSession(
+        val maxCostUsd = AgentClaimAmount.MicroCoral(fundAmount).toUsd(jupiterService)
+        logger.info { "Created funded payment session with maxCost = $fundAmount ($maxCostUsd USD)" }
+
+        return blockchainService.createAndFundEscrowSession(
             agents = agents.map { it.toBlockchainModel() },
             mintPubkey = CORAL_MAINNET_MINT,
-            sessionId = SessionIdUtils.uuidToSessionId(SessionIdUtils.generateSessionUuid())
+            sessionId = SessionIdUtils.uuidToSessionId(SessionIdUtils.generateSessionUuid()),
+            fundingAmount = fundAmount,
         ).getOrThrow()
     }
 
@@ -173,6 +183,11 @@ class LocalSessionManager(
             }
 
             subgraphs
+        }
+
+        if (sessionInfo != null) {
+            logger.info { "Local session $sessionId contains remote payment session ${sessionInfo.sessionId}" }
+            logger.info { "Payment session ${sessionInfo.sessionId} has a cap of ${sessionInfo.totalCap} and funding of ${sessionInfo.amountFunded}" }
         }
 
         val session = LocalSession(

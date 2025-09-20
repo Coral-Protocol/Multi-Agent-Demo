@@ -16,7 +16,8 @@ data class Claim(
     val id: String = UUID.randomUUID().toString(),
     val agent: GraphAgent,
     val maxCost: Long,
-    val paymentSessionId: PaymentSessionId
+    val paymentSessionId: PaymentSessionId,
+    val clientWalletAddress: String
 )
 
 class RemoteSessionManager(
@@ -43,14 +44,16 @@ class RemoteSessionManager(
     fun createClaimNoPaymentCheck(
         agent: GraphAgent,
         paymentSessionId: PaymentSessionId,
-        maxCost: Long
+        maxCost: Long,
+        clientWalletAddress: String
     ): String {
         paymentSessionCounts[paymentSessionId] = paymentSessionCounts.getOrDefault(paymentSessionId, 0u) + 1u
 
         val claim = Claim(
             agent = agent,
             paymentSessionId = paymentSessionId,
-            maxCost = maxCost
+            maxCost = maxCost,
+            clientWalletAddress = clientWalletAddress
         )
         claims[claim.id] = claim
 
@@ -66,7 +69,9 @@ class RemoteSessionManager(
             id = id,
             agent = claim.agent,
             deferredMcpTransport = CompletableDeferred(),
-            maxCost = claim.maxCost
+            maxCost = claim.maxCost,
+            paymentSessionId = claim.paymentSessionId,
+            clientWalletAddress = claim.clientWalletAddress
         )
 
         remoteSession.sessionClosedFlow.onEach {

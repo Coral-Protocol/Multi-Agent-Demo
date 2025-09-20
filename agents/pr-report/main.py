@@ -49,7 +49,7 @@ def generate_news_report(
         
         # Upload PDF to GCP Storage
         bucket_name = os.getenv("GCP_BUCKET_NAME")
-        if False: #bucket_name:
+        if bucket_name:
             upload_result = upload_report_to_gcs(
                 pdf_bytes=pdf_bytes,
                 topic=topic,
@@ -228,7 +228,7 @@ async def create_agent(coral_tools, agent_tools):
                - build_google_news_url: For creating Google News RSS URLs
             5. Process the request using the most appropriate tool based on the instruction.
             6. Take the JSON result from your tool and format it as a clear, structured response.
-            7. Use `send_message` from coral tools to send the JSON results back to the sender in the same thread with the processed data.
+            7. Use `send_message` from coral tools to send the JSON results back to the sender in the same thread with the processed data including the url of the PDF report.
             8. If any error occurs, use `send_message` to send error information and suggestions back to the sender.
             9. Always respond back to the sender agent with either results or error information.
             10. Wait for 2 seconds and repeat the process from step 1.

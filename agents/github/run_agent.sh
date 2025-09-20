@@ -1,6 +1,6 @@
 #!/usr/bin/env nix-shell
 #! nix-shell -i bash
-#! nix-shell -p uv python3
+#! nix-shell -p uv python3 nodejs
 
 set -e
 

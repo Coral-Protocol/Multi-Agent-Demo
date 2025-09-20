@@ -66,11 +66,8 @@ class GCPStorageUploader:
             # Upload the PDF bytes
             blob.upload_from_string(pdf_bytes, content_type='application/pdf')
             
-            # Make the blob publicly readable
-            blob.make_public()
-            
-            # Return the public URL
-            public_url = blob.public_url
+            # Generate public URL (works with uniform bucket-level access)
+            public_url = f"https://storage.googleapis.com/{self.bucket_name}/{blob_name}"
             print(f"Successfully uploaded PDF to: {public_url}")
             
             return public_url
@@ -120,13 +117,13 @@ class GCPStorageUploader:
             # Upload the PDF bytes
             blob.upload_from_string(pdf_bytes, content_type='application/pdf')
             
-            # Make the blob publicly readable
-            blob.make_public()
+            # Generate public URL (works with uniform bucket-level access)
+            public_url = f"https://storage.googleapis.com/{self.bucket_name}/{blob_name}"
             
             # Return detailed response
             response = {
                 'success': True,
-                'pdf_url': blob.public_url,
+                'pdf_url': public_url,
                 'filename': filename,
                 'blob_name': blob_name,
                 'bucket_name': self.bucket_name,

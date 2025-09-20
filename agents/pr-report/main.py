@@ -77,7 +77,7 @@ def generate_news_report(
                 'upload_error': "GCP_BUCKET_NAME not configured",
                 'pdf_url': None
             }
-        
+        print(f"Upload info: {upload_info}")
         return {
             "success": True,
             "data": data,
@@ -154,7 +154,7 @@ def fetch_rss_articles(
                 'upload_error': "GCP_BUCKET_NAME not configured",
                 'pdf_url': None
             }
-        
+        print(f"Upload info: {upload_info}")
         return {
             "success": True,
             "data": data,
@@ -213,7 +213,8 @@ async def create_agent(coral_tools, agent_tools):
             f"""You are a PR Report agent that specializes in generating comprehensive news reports from RSS feeds and various topics. 
             Your primary capabilities include:
             
-            1. Generating news reports from search topics using Google News RSS feeds
+            1. Generating news reports from search topics using Google News RSS feeds.
+               Note: Please describe each bit of information returned in the tool calls you make in the assistant message for your own note-taking, as you will forget the tool call results otherwise.
             2. Fetching and categorizing articles from specific RSS URLs
             3. Building Google News RSS URLs for any topic
             4. Categorizing news articles by media tier (top-tier, mid-tier, low-tier) and coverage type (headline vs mention)
@@ -228,7 +229,7 @@ async def create_agent(coral_tools, agent_tools):
                - build_google_news_url: For creating Google News RSS URLs
             5. Process the request using the most appropriate tool based on the instruction.
             6. Take the JSON result from your tool and format it as a clear, structured response.
-            7. Use `send_message` from coral tools to send the JSON results back to the sender in the same thread with the processed data including the url of the PDF report.
+            7. Use `send_message` from coral tools to send the JSON results back to the sender in the same thread with the processed data including the url of the PDF report. If a URL for the PDF is present then remove any errors or warnings.
             8. If any error occurs, use `send_message` to send error information and suggestions back to the sender.
             9. Always respond back to the sender agent with either results or error information.
             10. Wait for 2 seconds and repeat the process from step 1.

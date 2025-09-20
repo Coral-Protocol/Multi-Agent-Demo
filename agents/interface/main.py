@@ -275,24 +275,6 @@ async def main():
         for i, tool in enumerate(coral_tools):
             print(f"[VERBOSE]   Tool {i+1}: {tool.name}")
         logger.info(f"Retrieved {len(coral_tools)} coral tools")
-
-        print("[VERBOSE] Checking runtime mode and required tools...")
-        if config["runtime"] is not None:
-            print("[VERBOSE] Runtime mode detected - validating required tools...")
-            required_tools = [REQUEST_QUESTION_TOOL, ANSWER_QUESTION_TOOL]
-            available_tools = [tool.name for tool in coral_tools]
-            print(f"[VERBOSE] Required tools: {required_tools}")
-            print(f"[VERBOSE] Available tools: {available_tools}")
-            
-            for tool_name in required_tools:
-                if tool_name not in available_tools:
-                    error_message = f"Required tool '{tool_name}' not found in coral_tools"
-                    print(f"[VERBOSE] ERROR: {error_message}")
-                    logger.error(error_message)
-                    raise ValueError(error_message)
-            print("[VERBOSE] All required tools found")
-        else:
-            print("[VERBOSE] Interactive mode - no runtime tool validation needed")
         
         print("[VERBOSE] Creating agent tools dictionary...")
         agent_tools = {tool.name: tool for tool in coral_tools}

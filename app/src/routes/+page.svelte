@@ -13,8 +13,10 @@
     <button type="button" class="btn-icon preset-filled" title="Go" aria-label="Go" onclick={async() => {
       results = [];
       loading = true;
+
       const res = await fetch(encodeURI(`/search?q=${query}`));
       const data = await res.json();
+      
       results.push(data.result);
       loading = false;
     }}><Search size={18} /></button>

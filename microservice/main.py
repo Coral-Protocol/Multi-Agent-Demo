@@ -42,6 +42,7 @@ customTools = {
 # we use the same agent graph, so lets keep it here
 agentGraphRequest = {
     "agents": [
+        {},
         {
             "id": {"name": "firecrawl", "version": "0.0.1"},
             "name": "firecrawl",
@@ -85,7 +86,7 @@ def create_app_graph_request(query: str):
         "customToolAccess": ["search-result"],
     }
     final_req = agentGraphRequest
-    final_req["agents"] += [interface_agent]
+    final_req["agents"][0] = interface_agent
     print("FINAL_REQ")
     print(json.dumps(final_req, indent=4))
     return final_req

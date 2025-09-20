@@ -15,7 +15,7 @@ FIRECRAWL_KEY = os.getenv("FIRECRAWL_KEY")
 GH_PAT = os.getenv("GH_PAT")
 
 CORAL_SERVER_HOST = os.getenv("CORAL_SERVER_HOST", "http://localhost:5555")
-THIS_HOST = os.getenv("THIS_HOST", "http://localhost:8080")
+THIS_HOST = os.getenv("THIS_HOST", "http://localhost:8000")
 
 customTools = {
     "search-result": {

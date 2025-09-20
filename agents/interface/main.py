@@ -176,12 +176,15 @@ async def create_agent(coral_tools: List[Any]) -> AgentExecutor:
     print(f"[VERBOSE] Tools description generated: {len(coral_tools_description)} characters")
     
     print("[VERBOSE] Creating chat prompt template...")
+    query = os.getenv('USER_REQUEST')
     prompt = ChatPromptTemplate.from_messages([
         (
             "system",
             f"""Your primary role is to plan tasks sent by the user and send clear instructions to other agents to execute them, focusing solely on questions about the Coral Server, its tools: {coral_tools_description}, and registered agents. 
             Always use {{chat_history}} to understand the context of the question along with the user's instructions. 
             Think carefully about the question, analyze its intent, and create a detailed plan to address it, considering the roles and capabilities of available agents, description and their tools. 
+
+            Your task is to coordinate with the other agents to find results for the query: "{query}".
 
             Follow the steps in order:
             1. Call list_agents to get all connected agents and their descriptions.
@@ -195,8 +198,8 @@ async def create_agent(coral_tools: List[Any]) -> AgentExecutor:
                 - Send clear instructions via send_message(threadId=..., content="instruction", mentions=[agent ID]). Instructions should specify the task, any dependencies (e.g., "use output from Agent X"), and expected output format.
                 - Use wait_for_mentions(timeoutMs=60000) up to 5 times to collect responses.
                 - Store responses for synthesis.
-            4. Synthesize responses into a clear, concise answer, referencing chat history if relevant to maintain context.
-            5. Return the answer.
+            4. Synthesize responses into clear, concise, self contained 'search results'.
+            5. Return the answer, by calling the send-search-result tool, once for each relevant result you get back from other agents. You can send these as soon as you have good results. 
 
             """
         ),

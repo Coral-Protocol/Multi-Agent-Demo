@@ -7,6 +7,11 @@ description = "Agent designed to interface with the end user"
 type = "string"
 description = "API key for the model provider"
 
+[options.USER_REQUEST]
+type = "string"
+required = true
+description = "The user request to fulfill"
+
 [options.MODEL_NAME]
 type = "string"
 description = "What model to use (e.g 'gpt-4.1')"

@@ -7,9 +7,9 @@
 
   let loading = $state(false);
 </script>
-<main class="flex flex-col items-center justify-center pt-64">
+<main class="flex flex-col items-center justify-center pt-10">
   <div class="flex flex-row gap-2 w-[70%] mb-5">
-  <input class="input" type="text" placeholder="Input" bind:value={query}/>
+  <input class="input" type="text" placeholder="What do you want to know?" bind:value={query}/>
     <button type="button" class="btn-icon preset-filled" title="Go" aria-label="Go" onclick={async() => {
       results = [];
       loading = true;

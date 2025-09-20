@@ -8,7 +8,7 @@ export const GET: RequestHandler = async ({ url }) => {
     }
 
     try {
-        // Replace with the host you want to fetch from
+        // ask our microservice
         const targetHost = 'http://localhost:8000/search';
         const fetchUrl = `${targetHost}?q=${encodeURIComponent(query)}`;
 
@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ url }) => {
             },
             body: JSON.stringify({ q: query })
         });
-        const data = await res.json(); // use .json() if the response is JSON
+        const data = await res.json();
 
         return new Response(JSON.stringify(data), {
             status: res.status,

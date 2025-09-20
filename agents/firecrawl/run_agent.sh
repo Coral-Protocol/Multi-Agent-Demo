@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash
+#! nix-shell -p uv python3
+
 set -e
 
 fatal () {

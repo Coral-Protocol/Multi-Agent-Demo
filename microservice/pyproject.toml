@@ -1,0 +1,12 @@
+[project]
+name = "microservice"
+version = "0.1.0"
+description = "Minimal microservice for convenient interaction with agents"
+requires-python = ">=3.9"
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "httpx",
+    "python-dotenv",
+]

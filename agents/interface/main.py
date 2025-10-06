@@ -306,62 +306,65 @@ async def main():
         print("[VERBOSE] ========== ENTERING MAIN LOOP ==========")
         loop_iteration = 0
         
-        while True:
+        # You could add an option to make this repeat a configurable number of times
+        for i in range(50):
             try:
                 loop_iteration += 1
                 print(f"[VERBOSE] --- Loop iteration {loop_iteration} ---")
-                
+
                 print("[VERBOSE] Getting user input...")
                 user_input = await get_user_input(config["runtime"], agent_tools)
-                
+
                 print("[VERBOSE] Formatting chat history...")
                 formatted_history = format_chat_history(chat_history)
                 print(f"[VERBOSE] Chat history formatted: {len(formatted_history)} characters")
-                
+
                 print("[VERBOSE] Invoking agent executor...")
                 print(f"[VERBOSE] Agent executor input:")
                 print(f"[VERBOSE]   - user_input: {user_input}")
                 print(f"[VERBOSE]   - chat_history length: {len(formatted_history)} chars")
-                
+
                 result = await agent_executor.ainvoke({
                     "user_input": user_input,
                     "agent_scratchpad": [],
                     "chat_history": formatted_history
                 })
-                
+
                 print(f"[VERBOSE] Agent executor completed. Result keys: {list(result.keys())}")
                 response = result.get('output', 'No output returned')
                 print(f"[VERBOSE] Extracted response: {len(response)} characters")
-                
+
                 print("[VERBOSE] Sending response...")
                 await send_response(config["runtime"], agent_tools, response)
 
                 print("[VERBOSE] Updating chat history...")
                 chat_history.append({"user_input": user_input, "response": response})
                 print(f"[VERBOSE] Chat history updated. Current size: {len(chat_history)}")
-                
+
                 if len(chat_history) > MAX_CHAT_HISTORY:
                     removed = chat_history.pop(0)
                     print(f"[VERBOSE] Chat history size exceeded {MAX_CHAT_HISTORY}, removed oldest entry")
                     print(f"[VERBOSE] Removed entry preview: {removed['user_input'][:50]}...")
-                
+
                 print(f"[VERBOSE] Sleeping for {SLEEP_INTERVAL} seconds...")
                 await asyncio.sleep(SLEEP_INTERVAL)
                 print(f"[VERBOSE] Loop iteration {loop_iteration} completed successfully")
-                
+
             except Exception as e:
                 print(f"[VERBOSE] ERROR in agent loop iteration {loop_iteration}: {str(e)}")
                 print(f"[VERBOSE] Exception type: {type(e).__name__}")
                 logger.error(f"Error in agent loop: {str(e)}")
                 print(f"[VERBOSE] Sleeping for {ERROR_RETRY_INTERVAL} seconds before retry...")
                 await asyncio.sleep(ERROR_RETRY_INTERVAL)
-                
+
     except Exception as e:
         print(f"[VERBOSE] FATAL ERROR in main function: {str(e)}")
         print(f"[VERBOSE] Fatal exception type: {type(e).__name__}")
         logger.error(f"Fatal error in main: {str(e)}")
         print("[VERBOSE] ========== MAIN FUNCTION TERMINATING ==========")
         raise
+    print("Finished loop")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

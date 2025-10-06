@@ -13,6 +13,7 @@ def get_tools_description(tools):
         for tool in tools
     )
 
+
 async def create_agent(coral_tools, agent_tools):
     coral_tools_description = get_tools_description(coral_tools)
     agent_tools_description = get_tools_description(agent_tools)
@@ -35,8 +36,8 @@ async def create_agent(coral_tools, agent_tools):
 
             These are the list of coral tools: {coral_tools_description}
             These are the list of your tools: {agent_tools_description}"""
-                ),
-                ("placeholder", "{agent_scratchpad}")
+        ),
+        ("placeholder", "{agent_scratchpad}")
 
     ])
 
@@ -48,12 +49,12 @@ async def create_agent(coral_tools, agent_tools):
         max_tokens=os.getenv("MODEL_MAX_TOKENS", "16000"),
         base_url=os.getenv("MODEL_BASE_URL", None)
     )
-    
+
     agent = create_tool_calling_agent(model, combined_tools, prompt)
     return AgentExecutor(agent=agent, tools=combined_tools, verbose=True, handle_parsing_errors=True)
 
-async def main():
 
+async def main():
     runtime = os.getenv("CORAL_ORCHESTRATION_RUNTIME", None)
     if runtime is None:
         load_dotenv()
@@ -96,17 +97,20 @@ async def main():
     print(f"Coral tools count: {len(coral_tools)}, GitHub tools count: {len(github_tools)}")
 
     agent_executor = await create_agent(coral_tools, github_tools)
-
-    while True:
+    
+    # You could add an option to make this repeat a configurable number of times
+    for i in range(50):
         try:
             print("Starting new agent invocation")
             await agent_executor.ainvoke({"agent_scratchpad": []})
             print("Completed agent invocation, restarting loop")
-            await asyncio.sleep(1)
+            await asyncio.sleep(5)
         except Exception as e:
             print(f"Error in agent loop: {e}")
             traceback.print_exc()
             await asyncio.sleep(5)
+    print("Finished loop")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -97,16 +97,18 @@ async def main():
 
     agent_executor = await create_agent(coral_tools, agent_tools)
 
-    while True:
+    # You could add an option to make this repeat a configurable number of times
+    for i in range(50):
         try:
             print("Starting new agent invocation")
             await agent_executor.ainvoke({"agent_scratchpad": []})
             print("Completed agent invocation, restarting loop")
-            await asyncio.sleep(1)
+            await asyncio.sleep(5)
         except Exception as e:
             print(f"Error in agent loop: {str(e)}")
             print(traceback.format_exc())
             await asyncio.sleep(5)
+    print("Finished loop")
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,8 +1,8 @@
 [[local-agent]]
-path = "agents/firecrawl"
+path = "agents/firecrawl-agent"
 
 [[local-agent]]
-path = "agents/github"
+path = "agents/github-agent"
 
 [[local-agent]]
-path = "agents/interface"
+path = "agents/blank-agent"

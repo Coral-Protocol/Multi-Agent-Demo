@@ -1,3 +1,12 @@
 [submodule "coral-server"]
 	path = coral-server
 	url = https://github.com/Coral-Protocol/coral-server.git
+[submodule "agents/blank-agent"]
+	path = agents/blank-agent
+	url = https://github.com/Coral-Protocol/langchain-agent
+[submodule "agents/github-agent"]
+	path = agents/github-agent
+	url = https://github.com/Coral-Protocol/Coral-GithubMCP-Agent
+[submodule "agents/firecrawl-agent"]
+	path = agents/firecrawl-agent
+	url = https://github.com/Coral-Protocol/Coral-FirecrawlMCP-Agent

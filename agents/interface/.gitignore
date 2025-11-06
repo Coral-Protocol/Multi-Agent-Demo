@@ -1,9 +1,0 @@
-*.env
-*.venv
-*.temp
-venv_creation.log
-uv
-uv.lock
-uvx
-env
-env.fish
